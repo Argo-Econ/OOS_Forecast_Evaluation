@@ -42,7 +42,7 @@ Datos_YoY3 <- Datos_ent |> mutate(across(where(is.numeric),
               xts(,order.by = as.Date(Datos_ent$Fecha))
 
 ## metodo 4 ----
-## humm!!!
+## Humm!!!
 Datos_YoY4 <- (Datos_ent[13:nrow(Datos_ent),-1]/Datos_ent[1:(nrow(Datos_ent) - 12),-1]) - 1
 Datos_YoY4 <- ts(Datos_YoY4,start = c(2001,1),frequency = 12)
 tail(Datos_YoY4)
@@ -147,66 +147,8 @@ Datos_lx <- Datos_lx |> as.data.frame() |> cbind(as.data.frame(outliers_IPC_lx$y
             rename(IPC_adj=x) |> relocate(IPC_adj) |> ts(start = c(2000,1), frequency = 12)
             
 tail(Datos_lx)
+# --------------------------------------------------------------/
 
-
-# Posible taller (Quiz) ----
-# -----------------------------------------------------------------------------/
-inf_slx <- diff(outliers_IPC_lx$yadj,differences = 1,lag = 12) 
-
-base_compara <- cbind("IPC_adj_lx"= outliers_IPC_lx$yadj
-                      ,"IPC_org_lx" = Datos_lx[,2]) |> diff(differences = 1,lag = 12)
-head(base_compara)
-delta_IPC <- base_compara |> as.data.frame() |> mutate(delta_pct = (IPC_adj_lx-IPC_org_lx)/IPC_org_lx
-                                                       ,delta_pbs = (IPC_adj_lx-IPC_org_lx)*10000) |> 
-             ts(start = c(2001,1), frequency = 12)
-tail(delta_IPC)
-ts_plot(delta_IPC)
-# -----------------------------------------------------------------------------/
-
-
-
-
-
-
-
-
-
-
-
-# Simula un outlier de innovación (IO)
-# -----------------------------------------------------------------------------/
-set.seed(123)
-# Generate a simple ARIMA process as a base time series
-n <- 200
-ts_data <- arima.sim(n = n, model = list(ar = -0.7))
-
-# Introduce an Innovative Outlier at time step 50
-outlier_position <- 150
-outlier_magnitude <- 10
-
-# Use stats::filter to ensure the correct function is used
-innovative_outlier_effect <- stats::filter(
-  c(rep(0, outlier_position - 1), outlier_magnitude, rep(0, n - outlier_position)),
-  filter = list(ar = -0.7), method = "recursive"
-)
-ts_data_with_io <- ts_data + innovative_outlier_effect
-
-# Plot the original and altered series
-plot(ts_data, type = "l", col = "blue", ylim = range(ts_data, ts_data_with_io, na.rm = TRUE),
-     main = "Serie de tiempo con outlier de innovación", ylab = "Valor", xlab = "Tiempo")
-lines(ts_data_with_io, col = "red", lty = 2)
-abline(v = outlier_position, col = "darkgreen", lty = 3)
-legend("topleft", legend = c("Serie original", "Serie con outlier IO", "Choque"),
-       col = c("blue", "red", "darkgreen"), lty = c(1, 2, 3), bty = "n")
-
-
-
-
-names(as.data.frame(Datos_lx))
-mod2 <- lm(formula = IPC~.,data = Datos_lx)
-summary(mod2)
-checkresiduals(mod2)
-mean(mod2$residuals)
 
 
 
@@ -251,7 +193,7 @@ exogenas <- base_in[,-c(1,2)]
 ## Recorte es para 3 años (36 datos de muestra 1 paso adelante, 35 a dos pasos adelante-
 ## 34 a tres pasos adelante, etc.
 
-recorte_fm <- (nrow(base_in) - 36)/nrow(base_in)   # 91% de los datos
+recorte_fm <- (nrow(base_in) - 36)/nrow(base_in)   # 88% de los datos
 horizonte  <- 24       # maximo nivel para el horizonte de pronostico
 pronostico <- 36       # número de simulaciones par el calculo de erores OOS
 
